@@ -18,6 +18,8 @@ while True:
     logger.log("main loop...")
 
     if time_now > time_next_report:
+        logger.log("Collecting measurements...")
+
         logger.log("Report to cloud...")
         time_next_report = time_now + REPORT_RATE
 
