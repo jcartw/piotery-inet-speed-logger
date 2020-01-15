@@ -1,10 +1,13 @@
 import time
 
 from lib.inet_speed import run_mock_speed_test
-from lib.inet_status import StatusMonitor
 from lib.weather import get_mock_weather
-from lib.circular_logging import Logger
 from lib.time_util import get_unix_timestamp
+
+# Classes
+from lib.circular_logging import Logger
+from lib.inet_status import StatusMonitor
+from lib.iotery_conn import IoteryConnection
 
 
 REPORT_RATE = 10  # seconds
@@ -12,6 +15,7 @@ INET_CONNECTION_CHECK_RATE = 60  # seconds
 
 logger = Logger(stdout_on=False)
 monitor = StatusMonitor()
+iotery_conn = IoteryConnection()
 
 time_now = get_unix_timestamp()
 time_next_report = time_now + REPORT_RATE
