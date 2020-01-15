@@ -1,53 +1,58 @@
-import urllib.request as request
-import pprint
 import socket
 
 
 class StatusMonitor(object):
 
-    def __init__(self):
-        self.ip_dict = {"google.com": "172.217.162.174",
-                        "amazon.com": "176.32.98.166", "facebook.com": "31.13.74.350"}
-        self.refresh_host_ips()
-
-    def get_ip_dict(self):
-        return self.ip_dict
-
-    def get_host_ip_by_url(self, url):
-        return socket.gethostbyname(url)
-
-    def refresh_host_ips(self):
-        if self.inet_is_connected:
-            for url in self.ip_dict.keys():
-                self.ip_dict[url] = self.get_host_ip_by_url(url)
+    def __init__(self, timeout=3, port=53):
+        self.dns_server_ips = ["8.8.8.8",
+                               "8.8.4.4",
+                               "9.9.9.9",
+                               "149.112.112.112",
+                               "1.1.1.1",
+                               "1.0.0.1"]
+        self.number_of_dns_servers = len(self.dns_server_ips)
+        self.timeout = timeout
+        self.port = port
+        self.dns_server_start_idx = -1
 
     def inet_is_connected(self):
-        for url in self.ip_dict.keys():
+
+        N = self.number_of_dns_servers
+        self.dns_server_start_idx = (self.dns_server_start_idx + 1) % N
+
+        for k in range(0, N):
+            idx = (self.dns_server_start_idx + k) % N
+            host = self.dns_server_ips[idx]
             try:
-                host_url = "http://" + self.ip_dict[url]
-                request.urlopen(host_url, timeout=2)
+                print("trying to connect to: {0}".format(host))
+                socket.setdefaulttimeout(self.timeout)
+                socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(
+                    (host, self.port))
                 return True
-            except:
+            except socket.error as ex:
+                print(ex)
                 pass
 
+        # tried all to no avail
         return False
 
 
 if __name__ == "__main__":
 
-    pp = pprint.PrettyPrinter(indent=4)
-
     # create monitor instance
     monitor = StatusMonitor()
 
-    print("Device has internet access")
+    print("Device has internet access?")
     is_connected = monitor.inet_is_connected()
     print(is_connected)
     print("")
 
-    if is_connected:
-        print("IP Dictionary")
-        monitor.refresh_host_ips()
-        ip_dict = monitor.get_ip_dict()
-        pp.pprint(ip_dict)
-        print("")
+    print("Device has internet access?")
+    is_connected = monitor.inet_is_connected()
+    print(is_connected)
+    print("")
+
+    print("Device has internet access?")
+    is_connected = monitor.inet_is_connected()
+    print(is_connected)
+    print("")
