@@ -18,8 +18,15 @@ class Logger(object):
         if not isinstance(text, str):
             raise Exception("The argument 'text' must be a string")
 
+        # Add timestamp to log
         line = get_utc_timestamp_str() + ": " + text
         self.log_cache.append(line)
+
+        # write log cache to file
+        f = open("piotery_inet_speed_logger.log", "w")
+        for line in self.log_cache:
+            f.write(line + "\n")
+        f.close()
 
         if(self.stdout_on):
             print(line)
