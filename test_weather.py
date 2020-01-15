@@ -19,7 +19,6 @@ if ENVS_LOADED:
     url = f"https://api.darksky.net/forecast/{DARKSKY_API_KEY}/{LATITUDE},{LONGITUDE}?exclude=hourly,daily"
     res = requests.get(url)
     data = res.json()
-
     pp.pprint(data)
 
 #{   'currently': {   'apparentTemperature': 85.32,

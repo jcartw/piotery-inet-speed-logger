@@ -16,8 +16,6 @@ print("Test download...")
 s.download(threads=threads)
 print("Test upload...")
 s.upload(threads=threads)
-print("Share results...")
-print(s.results.share())
 
 print("Results dict")
 results_dict = s.results.dict()
