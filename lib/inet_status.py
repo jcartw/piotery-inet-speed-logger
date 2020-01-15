@@ -13,21 +13,24 @@ class StatusMonitor(object):
         self.number_of_dns_servers = len(self.dns_server_ips)
         self.timeout = timeout
         self.port = port
-        self.dns_server_start_idx = -1
+        self.dns_server_start_idx = 0
+
+    def get_start_dns(self):
+        idx = self.dns_server_start_idx
+        return self.dns_server_ips[idx]
 
     def inet_is_connected(self):
 
         N = self.number_of_dns_servers
-        self.dns_server_start_idx = (self.dns_server_start_idx + 1) % N
 
         for k in range(0, N):
             idx = (self.dns_server_start_idx + k) % N
             host = self.dns_server_ips[idx]
             try:
-                print("trying to connect to: {0}".format(host))
                 socket.setdefaulttimeout(self.timeout)
                 socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(
                     (host, self.port))
+                self.dns_server_start_idx = (self.dns_server_start_idx + 1) % N
                 return True
             except socket.error as ex:
                 print(ex)
@@ -42,17 +45,11 @@ if __name__ == "__main__":
     # create monitor instance
     monitor = StatusMonitor()
 
-    print("Device has internet access?")
-    is_connected = monitor.inet_is_connected()
-    print(is_connected)
-    print("")
-
-    print("Device has internet access?")
-    is_connected = monitor.inet_is_connected()
-    print(is_connected)
-    print("")
-
-    print("Device has internet access?")
-    is_connected = monitor.inet_is_connected()
-    print(is_connected)
-    print("")
+    for k in range(0, 10):
+        dns_ip = monitor.get_start_dns()
+        print("Next DNS server to check: {0}".format(dns_ip))
+        print("")
+        print("Device has internet access?")
+        is_connected = monitor.inet_is_connected()
+        print(is_connected)
+        print("")
