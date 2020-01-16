@@ -9,11 +9,14 @@ from lib.circular_logging import Logger
 from lib.inet_status import StatusMonitor
 from lib.iotery_conn import IoteryConnection
 
+# Globals
+import lib.globals as _GLOBALS_
 
-REPORT_RATE = 10  # seconds
-INET_CONNECTION_CHECK_RATE = 60  # seconds
 
-logger = Logger(stdout_on=False)
+REPORT_RATE = 5  # seconds
+INET_CONNECTION_CHECK_RATE = 1000  # seconds
+
+_GLOBALS_.logger = Logger(stdout_on=False)
 monitor = StatusMonitor()
 iotery_conn = IoteryConnection()
 
@@ -29,29 +32,37 @@ while True:
 
     time_now = get_unix_timestamp()
 
-    logger.log("main loop...")
-
     # Check for internet connection
     if time_now > time_next_inet_check:
-        logger.log("Checking for internet connection...")
+        _GLOBALS_.logger.log("INFO: internet connection check begin")
         inet_is_connected = monitor.inet_is_connected()
         if inet_is_connected:
             # reset last connection timestamp
             time_last_inet_connection = time_now
+            _GLOBALS_.logger.log("Connected to the internet")
         else:
             # calculate downtime
             inet_downtime = time_now - time_last_inet_connection
-            logger.log(f"Current downtime: {inet_downtime}")
+            _GLOBALS_.logger.log(
+                f"Not connected to the internet. The current downtime is {inet_downtime} seconds.")
 
-        logger.log("Report to cloud...")
-        time_next_report = time_now + REPORT_RATE
+        time_next_inet_check = time_now + INET_CONNECTION_CHECK_RATE
 
     if time_now > time_next_report and inet_is_connected:
-        logger.log("Collecting measurements...")
+        _GLOBALS_.logger.log("INFO: iotery data report begin")
+        results_speed_test = run_mock_speed_test()
+        results_weather = get_mock_weather()
 
-        # report inet_downtime and reset
+        # report data to iotery
+        iotery_data = {"INTERNET_DOWNTIME": inet_downtime,
+                       "SPEED_TEST_RESULTS": results_speed_test,
+                       "WEATHER_DATA": results_weather}
+        iotery_status = iotery_conn.post_data(data=iotery_data)
 
-        logger.log("Report to cloud...")
-        time_next_report = time_now + REPORT_RATE
+        # set timestamp threshold for next report event and reset inet_downtime
+        if iotery_status["status"] == "success":
+            time_next_report = time_now + REPORT_RATE
+            inet_downtime = 0
+            _GLOBALS_.logger.log("SUCCESS: Data report successful.")
 
     time.sleep(1.0)

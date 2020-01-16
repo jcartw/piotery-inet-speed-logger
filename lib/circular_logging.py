@@ -2,7 +2,7 @@ from lib.time_util import get_utc_timestamp_str
 
 from collections import deque
 
-CACHE_SIZE = 20
+CACHE_SIZE = 50
 
 
 class Logger(object):
