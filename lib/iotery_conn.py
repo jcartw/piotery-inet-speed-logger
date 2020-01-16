@@ -14,12 +14,14 @@ class IoteryConnection(object):
         self.iotery = Iotery()
         try:
             self.me = {"uuid": "NONE", "deviceType": {"uuid": "NONE"}}
+            self.settings = {}
             self.key = os.environ["IOTERY_DEVICE_KEY"]
             self.serial = os.environ["IOTERY_DEVICE_SERIAL"]
             self.secret = os.environ["IOTERY_DEVICE_SECRET"]
             self.team_uuid = os.environ["IOTERY_TEAM_UUID"]
             self.login()
             self.get_device_info()
+            self.update_device_settings()
         except:
             raise Exception("Error: Iotery device credentials not found.")
 
@@ -45,6 +47,7 @@ class IoteryConnection(object):
         for k in range(0, 3):
             try:
                 self.me = self.iotery.getMe()
+                pp.pprint(self.me)
                 return {"status": "success"}
             except:
                 # perform another login if req failed
@@ -53,6 +56,20 @@ class IoteryConnection(object):
         # failure
         _GLOBALS_.logger.log("ERROR: failed to obtain device info.")
         return {"status": "failed"}
+
+    def update_device_settings(self):
+
+        settings_list = self.me.get("settings", [])
+        for setting in settings_list:
+            setting_type = setting.get("settingType", None)
+            if not setting_type is None:
+                enum = setting_type.get("enum", None)
+                value = setting.get("value", None)
+                if not (enum is None) and not (value is None):
+                    self.settings[enum] = value
+
+    def get_device_settings(self):
+        return self.settings
 
     def post_data(self, data):
 
