@@ -1,0 +1,11 @@
+#!/bin/bash
+
+while true
+do
+    cd /home/pi/piotery-inet-speed-logger
+    source venv/bin/activate
+    source .env
+    python main.py
+    echo "$(date + %s)-INET logger exited with code $?. Respawning.." >> /home/pi/piotery-inet-speed-logger/run.log
+    sleep 30 
+done
