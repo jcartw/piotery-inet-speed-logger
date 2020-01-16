@@ -81,10 +81,10 @@ while True:
     if time_now > time_next_report and inet_is_connected:
         try:
             _GLOBALS_.logger.log("INFO: iotery data report begin")
-            #results_speed_test = run_speed_test()
-            #results_weather = get_weather()
-            results_speed_test = run_mock_speed_test()
-            results_weather = get_mock_weather()
+            results_speed_test = run_speed_test()
+            results_weather = get_weather()
+            #results_speed_test = run_mock_speed_test()
+            #results_weather = get_mock_weather()
 
             # sync device info with cloud
             iotery_conn.get_device_info()
