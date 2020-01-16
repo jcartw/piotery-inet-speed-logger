@@ -7,7 +7,8 @@ sudo apt-get install git
 sudo apt-get install python3-pip
 
 # Installing Python 3.7.4
-https://installvirtual.com/install-python-3-7-on-raspberry-pi/
+* https://installvirtual.com/install-python-3-7-on-raspberry-pi/
+* note: this shouldn't be needed for Raspbian Buster and up
 
 # PIP Installs
 pip3 install virtualenv
