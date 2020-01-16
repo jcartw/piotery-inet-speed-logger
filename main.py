@@ -22,6 +22,10 @@ device_settings = iotery_conn.get_device_settings()
 DATA_REPORT_RATE = device_settings.get("DATA_REPORT_RATE", 1800)  # seconds
 INTERNET_CONNECTION_CHECK_RATE = device_settings.get(
     "INTERNET_CONNECTION_CHECK_RATE", 120)  # seconds
+_GLOBALS_.logger.log(
+    f"INFO: data report rate set to {DATA_REPORT_RATE} seconds.")
+_GLOBALS_.logger.log(
+    f"INFO: inet connection check rate set to {INTERNET_CONNECTION_CHECK_RATE} seconds.")
 
 # Setup future timestamps
 time_now = get_unix_timestamp()
@@ -38,10 +42,20 @@ while True:
 
     # keep rates up to date according to cloud settings
     device_settings = iotery_conn.get_device_settings()
+
+    prev_val = DATA_REPORT_RATE
     DATA_REPORT_RATE = device_settings.get(
-        "DATA_REPORT_RATE", 1800)  # seconds
+        "DATA_REPORT_RATE", prev_val)  # seconds
+    if DATA_REPORT_RATE != prev_val:
+        _GLOBALS_.logger.log(
+            f"INFO: data report rate set to {DATA_REPORT_RATE} seconds.")
+
+    prev_val = INTERNET_CONNECTION_CHECK_RATE
     INTERNET_CONNECTION_CHECK_RATE = device_settings.get(
-        "INTERNET_CONNECTION_CHECK_RATE", 120)  # seconds
+        "INTERNET_CONNECTION_CHECK_RATE", prev_val)  # seconds
+    if INTERNET_CONNECTION_CHECK_RATE != prev_val:
+        _GLOBALS_.logger.log(
+            f"INFO: inet connection check rate set to {INTERNET_CONNECTION_CHECK_RATE} seconds.")
 
     # Check for internet connection
     if time_now > time_next_inet_check:
@@ -74,6 +88,7 @@ while True:
 
             # sync device info with cloud
             iotery_conn.get_device_info()
+            iotery_conn.update_device_settings()
 
             # report data to iotery
             iotery_data = {"INTERNET_DOWNTIME": inet_downtime,

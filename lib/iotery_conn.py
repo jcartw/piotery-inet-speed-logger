@@ -41,13 +41,13 @@ class IoteryConnection(object):
             _GLOBALS_.logger.log("ERROR: iotery device login failed.")
 
     def get_device_info(self):
-        _GLOBALS_.logger.log("Requesting device info from iotery...")
 
         # allow 2 retries to get info
         for k in range(0, 3):
             try:
+                _GLOBALS_.logger.log("Requesting device info from iotery...")
                 self.me = self.iotery.getMe()
-                pp.pprint(self.me)
+                _GLOBALS_.logger.log("Device info obtained.")
                 return {"status": "success"}
             except:
                 # perform another login if req failed
@@ -66,7 +66,11 @@ class IoteryConnection(object):
                 enum = setting_type.get("enum", None)
                 value = setting.get("value", None)
                 if not (enum is None) and not (value is None):
-                    self.settings[enum] = value
+                    try:
+                        # only integer settings for now
+                        self.settings[enum] = int(value)
+                    except:
+                        pass
 
     def get_device_settings(self):
         return self.settings
