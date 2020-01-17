@@ -46,7 +46,7 @@ def get_weather():
         return None
 
     # Get weather data from darksky
-    url = f"https://api.darksky.net/forecast/{DARKSKY_API_KEY}/{LATITUDE},{LONGITUDE}?exclude=hourly,daily"
+    url = f"https://api.darksky.net/forecast/{DARKSKY_API_KEY}/{LATITUDE},{LONGITUDE}?exclude=minutely,hourly,daily,alerts"
     res = requests.get(url)
     weather_data = res.json()
     return weather_data
@@ -57,12 +57,12 @@ if __name__ == "__main__":
 
     print("Mock weather results")
     print("----------------------------")
-    weather_results = get_mock_weather()
-    pp.pprint(weather_results)
+    #weather_results = get_mock_weather()
+    # pp.pprint(weather_results)
     print("")
 
     print("Actual weather results")
     print("----------------------------")
-    #weather_results = get_weather()
-    # pp.pprint(weather_results)
+    weather_results = get_weather()
+    pp.pprint(weather_results)
     print("")
