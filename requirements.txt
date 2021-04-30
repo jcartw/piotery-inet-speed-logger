@@ -7,4 +7,4 @@ pprint==0.1
 pycodestyle==2.5.0
 requests==2.22.0
 speedtest-cli==2.1.2
-urllib3==1.25.7
+urllib3==1.25.8
